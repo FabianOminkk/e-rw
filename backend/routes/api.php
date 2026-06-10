@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Pay monthly bills (Accessible by Bendahara, Warga, and Super Admin)
     Route::middleware('role:bendahara,warga,super_admin')->group(function () {
         Route::put('/bills/{bill}/pay', [FinanceController::class, 'payBill']); // Pay a monthly bill
+        Route::post('/bills/pay-custom', [FinanceController::class, 'payCustomBill']); // Pay custom monthly bill
     });
 
 });

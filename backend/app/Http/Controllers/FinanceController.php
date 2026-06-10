@@ -159,4 +159,56 @@ class FinanceController extends Controller
             'data' => $bill->load('user:id,name,email')
         ]);
     }
+
+    /**
+     * Pay a monthly bill with custom amount and month.
+     */
+    public function payCustomBill(Request $request)
+    {
+        $request->validate([
+            'month' => 'required|string|regex:/^\d{4}-\d{2}$/',
+            'amount' => 'required|numeric|min:1',
+            'user_id' => 'nullable|exists:users,id',
+        ]);
+
+        $userId = auth()->user()->role === 'warga' ? auth()->id() : $request->input('user_id', auth()->id());
+        $user = User::findOrFail($userId);
+
+        $bill = Bill::where('user_id', $userId)->where('month', $request->month)->first();
+
+        if ($bill && $bill->status === 'paid') {
+            return response()->json(['message' => 'Tagihan untuk periode ini sudah lunas.'], 422);
+        }
+
+        DB::transaction(function () use (&$bill, $userId, $user, $request) {
+            if ($bill) {
+                $bill->update([
+                    'status' => 'paid',
+                    'amount' => $request->amount,
+                    'payment_date' => now()->format('Y-m-d')
+                ]);
+            } else {
+                $bill = Bill::create([
+                    'user_id' => $userId,
+                    'month' => $request->month,
+                    'amount' => $request->amount,
+                    'status' => 'paid',
+                    'payment_date' => now()->format('Y-m-d')
+                ]);
+            }
+
+            // Record income in Kas RW
+            Finance::create([
+                'type' => 'income',
+                'amount' => $request->amount,
+                'description' => "Iuran bulanan {$request->month} - {$user->name}",
+                'date' => now()->format('Y-m-d')
+            ]);
+        });
+
+        return response()->json([
+            'message' => 'Pembayaran iuran berhasil dicatat.',
+            'data' => $bill->load('user:id,name,email')
+        ]);
+    }
 }
