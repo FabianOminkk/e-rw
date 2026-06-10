@@ -94,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(data.user);
       setLoading(false);
       
+      alert('Berhasil Login!');
       router.push('/dashboard');
     } catch (error) {
       setLoading(false);
@@ -113,6 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(null);
       setUser(null);
       setLoading(false);
+      alert('Berhasil Logout!');
       router.push('/login');
     }
   };
