@@ -20,6 +20,8 @@ export default function CitizensPage() {
     email: '',
     password: '',
     gender: 'L',
+    birth_date: '',
+    is_pregnant: false,
     no_kk: '',
     no_rt: '',
     no_rw: '',
@@ -58,6 +60,8 @@ export default function CitizensPage() {
       email: '',
       password: '',
       gender: 'L',
+      birth_date: '',
+      is_pregnant: false,
       no_kk: '',
       no_rt: user?.no_rt || '003',
       no_rw: user?.no_rw || '012',
@@ -77,6 +81,8 @@ export default function CitizensPage() {
       email: citizen.email,
       password: '', // empty means do not change password
       gender: citizen.gender || 'L',
+      birth_date: citizen.birth_date || '',
+      is_pregnant: citizen.is_pregnant === 1 || citizen.is_pregnant === true,
       no_kk: citizen.no_kk || '',
       no_rt: citizen.no_rt || '',
       no_rw: citizen.no_rw || '',
@@ -295,6 +301,40 @@ export default function CitizensPage() {
                     <option value="P">Perempuan (P)</option>
                   </select>
                 </div>
+
+                <div className="input-group">
+                  <label className="input-label">Tanggal Lahir</label>
+                  <input
+                    className="input-field"
+                    type="date"
+                    name="birth_date"
+                    value={formData.birth_date}
+                    onChange={handleInputChange}
+                    style={{ background: '#ffffff', border: '1px solid #cbd5e1' }}
+                  />
+                  {errors?.birth_date && <span style={{ color: 'var(--accent-rose)', fontSize: '0.8rem' }}>{errors.birth_date[0]}</span>}
+                </div>
+
+                {formData.gender === 'P' && (
+                  <div className="input-group">
+                    <label className="input-label">Ibu Hamil / Mengandung?</label>
+                    <select
+                      className="input-field"
+                      name="is_pregnant"
+                      value={formData.is_pregnant ? '1' : '0'}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          is_pregnant: e.target.value === '1'
+                        });
+                      }}
+                      style={{ background: '#ffffff', border: '1px solid #cbd5e1' }}
+                    >
+                      <option value="0">Tidak Hamil</option>
+                      <option value="1">Sedang Hamil / Mengandung</option>
+                    </select>
+                  </div>
+                )}
 
                 <div className="input-group">
                   <label className="input-label">Email (Username)</label>

@@ -10,6 +10,8 @@ export interface User {
   email: string;
   role: 'super_admin' | 'admin' | 'bendahara' | 'warga';
   gender: 'L' | 'P';
+  birth_date: string | null;
+  is_pregnant: boolean | number | null;
   no_kk: string | null;
   no_rt: string | null;
   no_rw: string | null;

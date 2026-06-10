@@ -51,16 +51,98 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $warga = User::create([
-            'name' => 'Budi Santoso (Warga)',
+            'name' => 'Budi Santoso',
             'email' => 'warga@erw.com',
             'password' => Hash::make('password'),
             'role' => 'warga',
             'gender' => 'L',
+            'birth_date' => '1991-05-15', // 35 tahun (Dewasa)
+            'is_pregnant' => false,
             'no_kk' => '3201010101010001',
             'no_rt' => '003',
             'no_rw' => '012',
             'phone' => '089900112233',
             'address' => 'Jl. Merdeka No. 10, RT 03 / RW 12',
+            'status_warga' => 'aktif',
+        ]);
+
+        User::create([
+            'name' => 'Dinda Lestari (Bayi)',
+            'email' => 'dinda@erw.com',
+            'password' => Hash::make('password'),
+            'role' => 'warga',
+            'gender' => 'P',
+            'birth_date' => date('Y-m-d', strtotime('-1 years')), // 1 tahun (Bayi)
+            'is_pregnant' => false,
+            'no_kk' => '3201010101010001',
+            'no_rt' => '003',
+            'no_rw' => '012',
+            'phone' => '08122334455',
+            'address' => 'Jl. Merdeka No. 10, RT 03 / RW 12',
+            'status_warga' => 'aktif',
+        ]);
+
+        User::create([
+            'name' => 'Rian Wijaya (Anak)',
+            'email' => 'rian@erw.com',
+            'password' => Hash::make('password'),
+            'role' => 'warga',
+            'gender' => 'L',
+            'birth_date' => date('Y-m-d', strtotime('-7 years')), // 7 tahun (Anak-anak)
+            'is_pregnant' => false,
+            'no_kk' => '3201010101010002',
+            'no_rt' => '003',
+            'no_rw' => '012',
+            'phone' => '08211223344',
+            'address' => 'Jl. Kenanga No. 4, RT 03 / RW 12',
+            'status_warga' => 'aktif',
+        ]);
+
+        User::create([
+            'name' => 'Salsa Putri (Remaja)',
+            'email' => 'salsa@erw.com',
+            'password' => Hash::make('password'),
+            'role' => 'warga',
+            'gender' => 'P',
+            'birth_date' => date('Y-m-d', strtotime('-15 years')), // 15 tahun (Remaja)
+            'is_pregnant' => false,
+            'no_kk' => '3201010101010002',
+            'no_rt' => '003',
+            'no_rw' => '012',
+            'phone' => '08788990011',
+            'address' => 'Jl. Kenanga No. 4, RT 03 / RW 12',
+            'status_warga' => 'aktif',
+        ]);
+
+        User::create([
+            'name' => 'Mbah Kromo (Lansia)',
+            'email' => 'kromo@erw.com',
+            'password' => Hash::make('password'),
+            'role' => 'warga',
+            'gender' => 'L',
+            'birth_date' => date('Y-m-d', strtotime('-68 years')), // 68 tahun (Lansia)
+            'is_pregnant' => false,
+            'no_kk' => '3201010101010003',
+            'no_rt' => '003',
+            'no_rw' => '012',
+            'phone' => '08988776655',
+            'address' => 'Jl. Melati No. 8, RT 03 / RW 12',
+            'status_warga' => 'aktif',
+        ]);
+
+        User::create([
+            'name' => 'Siti Aminah (Ibu Hamil)',
+            'email' => 'siti@erw.com',
+            'password' => Hash::make('password'),
+            'role' => 'warga',
+            'gender' => 'P',
+            'birth_date' => '1998-08-20', // 28 tahun
+            'is_pregnant' => true,
+            'no_kk' => '3201010101010004',
+            'no_rt' => '003',
+            'no_rw' => '012',
+            'phone' => '08566554433',
+            'address' => 'Jl. Flamboyan No. 15, RT 03 / RW 12',
             'status_warga' => 'aktif',
         ]);
 

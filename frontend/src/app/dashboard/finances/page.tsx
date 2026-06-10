@@ -95,6 +95,19 @@ export default function FinancesPage() {
   const incomePercentage = totalFlow > 0 ? Math.round((totalIncome / totalFlow) * 100) : 0;
   const expensePercentage = totalFlow > 0 ? Math.round((totalExpense / totalFlow) * 100) : 0;
 
+  const lastTx = [...(finances.transactions || [])]
+    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(-10);
+
+  const maxVal = Math.max(...lastTx.map((t: any) => parseFloat(t.amount)), 100000);
+  const svgWidth = 600;
+  const svgHeight = 200;
+  const padding = 50;
+  const chartWidth = svgWidth - padding * 2;
+  const chartHeight = svgHeight - padding * 2;
+  const barWidth = 24;
+  const spacing = lastTx.length > 1 ? (chartWidth - barWidth * lastTx.length) / (lastTx.length - 1) : chartWidth;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="animate-fade-in">
       {/* Title & Top Action bar */}
@@ -162,6 +175,74 @@ export default function FinancesPage() {
             <span>{formatRupiah(totalExpense)}</span>
           </div>
         </div>
+      </div>
+
+      {/* Grafik Tren Arus Kas Terakhir (Pemasukan vs Pengeluaran) */}
+      <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <span style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>📈 Grafik Arus Kas Masuk & Keluar Terakhir (Real-time)</span>
+        {lastTx.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            Belum ada transaksi kas untuk digambar grafik.
+          </div>
+        ) : (
+          <div style={{ width: '100%', overflowX: 'auto' }}>
+            <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ width: '100%', minWidth: '500px', height: 'auto', display: 'block' }}>
+              {/* Grid Lines */}
+              <line x1={padding} y1={padding} x2={svgWidth - padding} y2={padding} stroke="#f1f5f9" strokeWidth="1" />
+              <line x1={padding} y1={padding + chartHeight / 2} x2={svgWidth - padding} y2={padding + chartHeight / 2} stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
+              <line x1={padding} y1={svgHeight - padding} x2={svgWidth - padding} y2={svgHeight - padding} stroke="#cbd5e1" strokeWidth="1.5" />
+              
+              {/* Y-Axis Labels */}
+              <text x={padding - 8} y={padding + 4} textAnchor="end" style={{ fontSize: '0.65rem', fill: 'var(--text-muted)', fontWeight: 700 }}>{formatRupiah(maxVal)}</text>
+              <text x={padding - 8} y={padding + chartHeight / 2 + 4} textAnchor="end" style={{ fontSize: '0.65rem', fill: 'var(--text-muted)', fontWeight: 700 }}>{formatRupiah(maxVal / 2)}</text>
+              <text x={padding - 8} y={svgHeight - padding + 4} textAnchor="end" style={{ fontSize: '0.65rem', fill: 'var(--text-muted)', fontWeight: 700 }}>Rp0</text>
+
+              {/* Bars */}
+              {lastTx.map((t: any, idx: number) => {
+                const val = parseFloat(t.amount);
+                const barHeight = (val / maxVal) * chartHeight;
+                const x = padding + idx * (barWidth + spacing) + spacing / 2;
+                const y = svgHeight - padding - barHeight;
+                const color = t.type === 'income' ? '#10b981' : '#ef4444';
+                const formattedDate = new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                
+                return (
+                  <g key={t.id}>
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={barHeight}
+                      fill={color}
+                      rx="3"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <title>{`${t.description}\n${t.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}: ${formatRupiah(val)}\nTanggal: ${formattedDate}`}</title>
+                    </rect>
+                    <text
+                      x={x + barWidth / 2}
+                      y={svgHeight - padding + 15}
+                      textAnchor="middle"
+                      style={{ fontSize: '0.6rem', fill: 'var(--text-muted)', fontWeight: 700 }}
+                    >
+                      {formattedDate}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '16px', fontSize: '0.8rem', fontWeight: 700 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#10b981', borderRadius: '3px' }} />
+                <span style={{ color: 'var(--text-secondary)' }}>Pemasukan</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ display: 'inline-block', width: '12px', height: '12px', background: '#ef4444', borderRadius: '3px' }} />
+                <span style={{ color: 'var(--text-secondary)' }}>Pengeluaran</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Transactions Table Panel */}

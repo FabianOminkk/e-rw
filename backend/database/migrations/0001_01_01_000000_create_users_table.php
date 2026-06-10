@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['super_admin', 'admin', 'bendahara', 'warga'])->default('warga');
             $table->enum('gender', ['L', 'P'])->default('L'); // L = Laki-laki, P = Perempuan
+            $table->date('birth_date')->nullable();
+            $table->boolean('is_pregnant')->default(false);
             $table->string('no_kk')->nullable();
             $table->string('no_rt')->nullable();
             $table->string('no_rw')->nullable();
