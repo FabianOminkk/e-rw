@@ -1,0 +1,2 @@
+// Unused configuration
+export default {};

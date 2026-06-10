@@ -1,0 +1,11 @@
+{
+  "name": "e-rw-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "php -S 127.0.0.1:8000 -t backend/public",
+    "serve:backend": "php backend/artisan serve",
+    "install:all": "npm install --prefix frontend"
+  }
+}

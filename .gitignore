@@ -1,0 +1,40 @@
+# Dependency folders
+node_modules/
+frontend/node_modules/
+backend/vendor/
+
+# Environment files
+.env
+backend/.env
+backend/.env.backup
+backend/.env.production
+frontend/.env*
+
+# Next.js build and cache outputs
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/next-env.d.ts
+frontend/*.tsbuildinfo
+
+# Laravel specific files
+backend/storage/*.key
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/testing/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/bootstrap/cache/*
+backend/.phpunit.result.cache
+backend/.phpunit.cache
+backend/public/storage
+backend/public/build
+backend/public/hot
+
+# General logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
