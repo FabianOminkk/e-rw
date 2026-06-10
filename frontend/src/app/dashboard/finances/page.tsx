@@ -307,7 +307,7 @@ export default function FinancesPage() {
               );
             }
 
-            const r = 45;
+            const r = 75;
             const circ = 2 * Math.PI * r;
             
             const donutSegments = [
@@ -338,12 +338,12 @@ export default function FinancesPage() {
 
             return (
               <div className="chart-container" style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', width: '100%', height: '100%', justifyContent: 'space-between' }}>
-                <div style={{ position: 'relative', width: '140px', height: '140px', marginTop: '10px' }}>
+                <div style={{ position: 'relative', width: '200px', height: '200px', marginTop: '10px' }}>
                   <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
                     {donutSegments.map((slice, idx) => {
                       const isHovered = hoveredLabel === slice.label;
                       const opacity = hoveredLabel === null ? 1 : (isHovered ? 1 : 0.55);
-                      const strokeWidth = isHovered ? 22 : 18;
+                      const strokeWidth = isHovered ? 24 : 20;
                       const gap = slice.pct === 100 ? 0 : 3;
                       const dashLength = Math.max(0, (slice.pct / 100) * circ - gap);
 
@@ -371,8 +371,8 @@ export default function FinancesPage() {
                   </svg>
                   {/* Center Text inside Donut */}
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selisih Kas</span>
-                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: finances.summary?.balance >= 0 ? '#10b981' : '#ef4444' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selisih Kas</span>
+                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: finances.summary?.balance >= 0 ? '#10b981' : '#ef4444' }}>
                       {formatRupiah(finances.summary?.balance || 0)}
                     </span>
                   </div>
