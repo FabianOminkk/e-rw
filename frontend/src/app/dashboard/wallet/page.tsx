@@ -575,11 +575,16 @@ export default function WalletPage() {
               </div>
 
               {/* Details grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', fontSize: '0.85rem' }}>
                 <div>
                   <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>DIBAYAR OLEH</span>
                   <strong style={{ color: '#0f172a', fontSize: '0.95rem', display: 'block', marginTop: '2px' }}>{selectedInvoice.user?.name || user?.name}</strong>
-                  <span style={{ color: 'var(--text-secondary)' }}>RT {selectedInvoice.user?.no_rt || user?.no_rt} / RW {selectedInvoice.user?.no_rw || user?.no_rw}</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>RT {selectedInvoice.user?.no_rt || user?.no_rt} / RW {selectedInvoice.user?.no_rw || user?.no_rw}</span>
+                </div>
+                <div>
+                  <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>DITERIMA OLEH</span>
+                  <strong style={{ color: '#0f172a', fontSize: '0.95rem', display: 'block', marginTop: '2px' }}>Bendahara RW</strong>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Atas Nama Pengurus RW</span>
                 </div>
                 <div>
                   <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>TANGGAL BAYAR</span>
@@ -589,7 +594,7 @@ export default function WalletPage() {
                       : '-'
                     }
                   </span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Metode: Digital Wallet/Cash</span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Metode: Digital/Cash</span>
                 </div>
               </div>
 
@@ -610,6 +615,22 @@ export default function WalletPage() {
                 <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Total Pembayaran</span>
                   <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{formatRupiah(parseFloat(selectedInvoice.amount))}</span>
+                </div>
+              </div>
+
+              {/* Tanda Tangan / Signature Area */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #e2e8f0', fontSize: '0.8rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Pembayar,</span>
+                  <div style={{ height: '40px' }} />
+                  <strong style={{ borderBottom: '1px solid #94a3b8', width: '120px', textAlign: 'center' }}>{selectedInvoice.user?.name || user?.name}</strong>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Warga</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Penerima,</span>
+                  <div style={{ height: '40px' }} />
+                  <strong style={{ borderBottom: '1px solid #94a3b8', width: '140px', textAlign: 'center' }}>Bendahara RW</strong>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>Atas Nama Pengurus RW</span>
                 </div>
               </div>
             </div>
