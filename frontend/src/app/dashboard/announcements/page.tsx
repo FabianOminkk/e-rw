@@ -135,7 +135,7 @@ export default function AnnouncementsPage() {
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.7', whiteSpace: 'pre-line' }}>{ann.content}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--panel-border)', paddingTop: '16px', marginTop: '8px' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Diterbitkan oleh: <strong style={{ color: 'var(--text-secondary)' }}>{ann.author?.name}</strong> ({ann.author?.role.replace('_', ' ')})
+                    Diterbitkan oleh: <strong style={{ color: 'var(--text-secondary)' }}>{ann.author?.name}</strong> ({ann.author?.role === 'admin' ? 'Ketua RT' : ann.author?.role.replace('_', ' ')})
                   </span>
                   
                   {isAdmin && (

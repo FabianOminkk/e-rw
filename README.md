@@ -37,8 +37,8 @@ Aplikasi ini mendukung **4 Role Pengguna** dengan batasan akses masing-masing. D
 
 | Role | Akun Uji Coba | Password Bawaan | Hak Akses Utama | Ikon Profil Default |
 | :--- | :--- | :--- | :--- | :--- |
-| **Super Admin** | `superadmin@erw.com` | `password` | Konfigurasi sistem global | 👨 (Laki-laki) |
-| **Admin RT** | `admin@erw.com` | `password` | CRUD Warga, Persetujuan Surat, Tanggapan Pengaduan, Tulis Pengumuman | 👨 (Laki-laki) |
+| **Super Admin** | `superadmin@erw.com` | `password` | Akses penuh seluruh sistem (Kelola Warga, Surat, Aduan, Kas Keuangan, & Tagihan Iuran) | 👨 (Laki-laki) |
+| **Ketua RT** | `admin@erw.com` | `password` | CRUD Warga, Persetujuan Surat, Tanggapan Pengaduan, Tulis Pengumuman | 👨 (Laki-laki) |
 | **Bendahara** | `bendahara@erw.com` | `password` | Kelola Buku Kas RW, Membuat Tagihan Bulanan, Konfirmasi Pembayaran Warga | 👩 (Perempuan) |
 | **Warga** | `warga@erw.com` | `password` | Mengajukan Surat Pengantar, Kirim Laporan Aduan, Cek Tagihan, Baca Pengumuman | 👨 (Laki-laki) |
 

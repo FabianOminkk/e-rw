@@ -61,8 +61,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </>
           )}
 
-          {/* Bendahara Menus */}
-          {user.role === 'bendahara' && (
+          {/* Bendahara / Super Admin Menus */}
+          {['bendahara', 'super_admin'].includes(user.role) && (
             <>
               <Link href="/dashboard/finances" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/finances') ? 'active' : ''}`}>
                 <span>💰</span> Keuangan Kas
@@ -102,7 +102,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="user-info" style={{ flexGrow: 1, minWidth: 0 }}>
             <span className="user-name" title={user.name}>{user.name}</span>
             <span className={`user-role-badge ${user.role}`}>
-              {user.role.replace('_', ' ')}
+              {user.role === 'admin' ? 'Ketua RT' : user.role.replace('_', ' ')}
             </span>
           </div>
         </div>

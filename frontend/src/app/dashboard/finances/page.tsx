@@ -89,6 +89,12 @@ export default function FinancesPage() {
 
   const isBendahara = user?.role === 'bendahara';
 
+  const totalIncome = parseFloat(finances.summary?.total_income || 0);
+  const totalExpense = parseFloat(finances.summary?.total_expense || 0);
+  const totalFlow = totalIncome + totalExpense;
+  const incomePercentage = totalFlow > 0 ? Math.round((totalIncome / totalFlow) * 100) : 0;
+  const expensePercentage = totalFlow > 0 ? Math.round((totalExpense / totalFlow) * 100) : 0;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} className="animate-fade-in">
       {/* Title & Top Action bar */}
@@ -121,6 +127,40 @@ export default function FinancesPage() {
           <span className="stat-value" style={{ color: 'var(--accent-rose)' }}>
             {formatRupiah(finances.summary?.total_expense || 0)}
           </span>
+        </div>
+      </div>
+
+      {/* Visualisasi Diagram Kas (Pemasukan vs Pengeluaran) */}
+      <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <span style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>📊 Diagram Perbandingan Kas (Pemasukan vs Pengeluaran)</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 700 }}>
+            <span style={{ color: 'var(--accent-emerald)' }}>Pemasukan: {incomePercentage}%</span>
+            <span style={{ color: 'var(--accent-rose)' }}>Pengeluaran: {expensePercentage}%</span>
+          </div>
+          <div style={{ height: '20px', display: 'flex', borderRadius: '6px', overflow: 'hidden', background: '#f1f5f9', border: '1px solid #cbd5e1' }}>
+            {incomePercentage > 0 && (
+              <div 
+                style={{ width: `${incomePercentage}%`, background: '#10b981' }} 
+                title={`Pemasukan: ${formatRupiah(totalIncome)}`} 
+              />
+            )}
+            {expensePercentage > 0 && (
+              <div 
+                style={{ width: `${expensePercentage}%`, background: '#ef4444' }} 
+                title={`Pengeluaran: ${formatRupiah(totalExpense)}`} 
+              />
+            )}
+            {totalFlow === 0 && (
+              <div style={{ width: '100%', background: '#cbd5e1', textAlign: 'center', fontSize: '0.75rem', color: '#64748b', lineHeight: '20px' }}>
+                Belum ada data arus kas
+              </div>
+            )}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+            <span>{formatRupiah(totalIncome)}</span>
+            <span>{formatRupiah(totalExpense)}</span>
+          </div>
         </div>
       </div>
 
