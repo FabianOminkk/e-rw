@@ -107,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
         <button className="logout-btn" onClick={logout} style={{ marginTop: '8px' }}>
-          🚪 Keluar Aplikasi
+          🚪 Logout
         </button>
       </aside>
 
