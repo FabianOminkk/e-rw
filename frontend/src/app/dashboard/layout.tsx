@@ -91,6 +91,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </>
           )}
 
+          {/* Inventaris Aset (Visible to everyone) */}
+          <Link href="/dashboard/assets" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/assets') ? 'active' : ''}`}>
+            <span>📦</span> Inventaris Aset
+          </Link>
+
+          {/* UMKM Warga (Visible to everyone) */}
+          <Link href="/dashboard/umkm" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/umkm') ? 'active' : ''}`}>
+            <span>🏪</span> UMKM Warga
+          </Link>
+
+          {/* Jadwal Ronda (Visible to everyone) */}
+          <Link href="/dashboard/ronda" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/ronda') ? 'active' : ''}`}>
+            <span>👮</span> Jadwal Ronda
+          </Link>
+
           {/* Announcements (Visible to everyone) */}
           <Link href="/dashboard/announcements" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/announcements') ? 'active' : ''}`}>
             <span>📢</span> Pengumuman

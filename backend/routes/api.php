@@ -6,6 +6,9 @@ use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\LetterController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\UmkmController;
+use App\Http\Controllers\RondaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,6 +75,38 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:bendahara,warga,super_admin')->group(function () {
         Route::put('/bills/{bill}/pay', [FinanceController::class, 'payBill']); // Pay a monthly bill
         Route::post('/bills/pay-custom', [FinanceController::class, 'payCustomBill']); // Pay custom monthly bill
+    });
+
+    // --- New Features (Aset, UMKM, Ronda) ---
+    
+    // 1. Assets / Inventaris
+    Route::get('/assets', [AssetController::class, 'index']);
+    Route::get('/assets/bookings', [AssetController::class, 'indexBookings']);
+    Route::post('/assets/bookings', [AssetController::class, 'storeBooking']);
+    Route::middleware('role:bendahara,super_admin')->group(function () {
+        Route::post('/assets', [AssetController::class, 'store']);
+        Route::put('/assets/{asset}', [AssetController::class, 'update']);
+        Route::delete('/assets/{asset}', [AssetController::class, 'destroy']);
+    });
+    Route::middleware('role:bendahara,admin,super_admin')->group(function () {
+        Route::put('/assets/bookings/{booking}/status', [AssetController::class, 'updateBookingStatus']);
+    });
+
+    // 2. UMKM / Katalog Usaha Warga
+    Route::get('/umkm', [UmkmController::class, 'index']);
+    Route::get('/umkm/my-listings', [UmkmController::class, 'myListings']);
+    Route::post('/umkm', [UmkmController::class, 'store']);
+    Route::delete('/umkm/{listing}', [UmkmController::class, 'destroy']);
+    Route::middleware('role:admin,super_admin')->group(function () {
+        Route::get('/umkm/pending', [UmkmController::class, 'indexPending']);
+        Route::put('/umkm/{listing}/status', [UmkmController::class, 'updateStatus']);
+    });
+
+    // 3. Ronda / Keamanan Malam
+    Route::get('/ronda', [RondaController::class, 'index']);
+    Route::middleware('role:admin,super_admin')->group(function () {
+        Route::post('/ronda', [RondaController::class, 'store']);
+        Route::delete('/ronda/{ronda}', [RondaController::class, 'destroy']);
     });
 
 });
