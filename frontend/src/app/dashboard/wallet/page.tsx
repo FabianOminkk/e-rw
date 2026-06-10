@@ -313,7 +313,26 @@ export default function WalletPage() {
           <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '480px', background: '#ffffff', border: '1px solid #cbd5e1', boxShadow: '0 10px 40px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
             <div className="panel-header" style={{ justifyContent: 'space-between', display: 'flex', alignItems: 'center', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
               <span className="panel-title" style={{ color: '#0f172a' }}>Lakukan Pembayaran Iuran</span>
-              <button onClick={() => setIsModalOpen(false)} style={{ fontSize: '1.5rem', cursor: 'pointer', opacity: 0.7, color: '#475569' }}>×</button>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '1.8rem', 
+                  cursor: 'pointer', 
+                  opacity: 0.7, 
+                  color: '#475569',
+                  lineHeight: 1,
+                  padding: '4px 8px',
+                  outline: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Tutup"
+              >
+                ×
+              </button>
             </div>
             
             <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
