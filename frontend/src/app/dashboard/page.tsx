@@ -25,6 +25,15 @@ export default function DashboardPage() {
     { label: 'Dewasa (18-59 th)', count: 0, color: '#64748b' }
   ]);
   const [loading, setLoading] = useState(true);
+  const [hoveredSlice, setHoveredSlice] = useState<{
+    label: string;
+    count: number;
+    pct: number;
+    color: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -307,9 +316,15 @@ export default function DashboardPage() {
             <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <span className="panel-title" style={{ fontSize: '1rem', fontWeight: 700 }}>📊 Demografi Kelompok Usia Warga</span>
               {(() => {
-                const total = demographics.reduce((sum, d) => sum + d.count, 0);
-                const activeSlices = demographics.filter(d => d.count > 0);
-                
+                const bayiCount = demographics.find(d => d.label === 'Bayi (<2 th)')?.count || 0;
+                const anakCount = demographics.find(d => d.label === 'Anak-anak (2-11 th)')?.count || 0;
+                const remajaCount = demographics.find(d => d.label === 'Remaja (12-17 th)')?.count || 0;
+                const lansiaCount = demographics.find(d => d.label === 'Lansia (>=60 th)')?.count || 0;
+                const hamilCount = demographics.find(d => d.label === 'Ibu Hamil')?.count || 0;
+                const dewasaCount = demographics.find(d => d.label === 'Dewasa (18-59 th)')?.count || 0;
+
+                const total = bayiCount + anakCount + remajaCount + lansiaCount + hamilCount + dewasaCount;
+
                 if (total === 0) {
                   return (
                     <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -318,57 +333,221 @@ export default function DashboardPage() {
                   );
                 }
 
-                const r = 50;
-                const circ = 2 * Math.PI * r;
-                let accumulatedPct = 0;
+                // Inner Ring: Broad Categories
+                const innerGroups = [
+                  { label: 'Anak & Remaja', count: bayiCount + anakCount + remajaCount, color: '#10b981' },
+                  { label: 'Dewasa', count: dewasaCount + hamilCount, color: '#6366f1' },
+                  { label: 'Lansia', count: lansiaCount, color: '#f59e0b' }
+                ].filter(g => g.count > 0);
+
+                let accumulatedInnerPct = 0;
+                const innerSegments = innerGroups.map(g => {
+                  const pct = (g.count / total) * 100;
+                  const rotation = (accumulatedInnerPct / 100) * 360 - 90;
+                  accumulatedInnerPct += pct;
+                  return { ...g, pct, rotation };
+                });
+
+                // Outer Ring: Detailed Categories (Aligned to parents)
+                const outerGroups = [
+                  { label: 'Bayi (<2 th)', count: bayiCount, color: '#0ea5e9', parent: 'Anak & Remaja' },
+                  { label: 'Anak-anak (2-11 th)', count: anakCount, color: '#34d399', parent: 'Anak & Remaja' },
+                  { label: 'Remaja (12-17 th)', count: remajaCount, color: '#a78bfa', parent: 'Anak & Remaja' },
+                  { label: 'Dewasa (18-59 th)', count: dewasaCount, color: '#94a3b8', parent: 'Dewasa' },
+                  { label: 'Ibu Hamil', count: hamilCount, color: '#f472b6', parent: 'Dewasa' },
+                  { label: 'Lansia (>=60 th)', count: lansiaCount, color: '#fbbf24', parent: 'Lansia' }
+                ].filter(g => g.count > 0);
+
+                let accumulatedOuterPct = 0;
+                const outerSegments = outerGroups.map(g => {
+                  const pct = (g.count / total) * 100;
+                  const rotation = (accumulatedOuterPct / 100) * 360 - 90;
+                  accumulatedOuterPct += pct;
+                  return { ...g, pct, rotation };
+                });
+
+                const rInner = 42;
+                const circInner = 2 * Math.PI * rInner;
+                const rOuter = 65;
+                const circOuter = 2 * Math.PI * rOuter;
+
+                const handleMouseMove = (e: React.MouseEvent, label: string, count: number, pct: number, color: string) => {
+                  setHoveredLabel(label);
+                  const container = e.currentTarget.closest('.chart-container');
+                  if (container) {
+                    const rect = container.getBoundingClientRect();
+                    setHoveredSlice({
+                      label,
+                      count,
+                      pct,
+                      color,
+                      x: e.clientX - rect.left + 15,
+                      y: e.clientY - rect.top - 15
+                    });
+                  }
+                };
+
+                const handleMouseLeave = () => {
+                  setHoveredLabel(null);
+                  setHoveredSlice(null);
+                };
 
                 return (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', width: '130px', height: '130px' }}>
-                      <svg viewBox="0 0 200 200" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
-                        {activeSlices.map((slice, idx) => {
-                          const pct = (slice.count / total) * 100;
-                          const offset = circ - (pct / 100) * circ;
-                          const rotation = (accumulatedPct / 100) * 360;
-                          accumulatedPct += pct;
+                  <div className="chart-container" style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', width: '100%' }}>
+                    {/* SVG Chart */}
+                    <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+                      <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+                        {/* Inner Ring */}
+                        {innerSegments.map((slice, idx) => {
+                          const isHovered = hoveredLabel === slice.label;
+                          const opacity = hoveredLabel === null ? 1 : (isHovered ? 1 : 0.55);
+                          const strokeWidth = isHovered ? 20 : 15;
+                          const gap = slice.pct === 100 ? 0 : 2.5;
+                          const dashLength = Math.max(0, (slice.pct / 100) * circInner - gap);
 
                           return (
                             <circle
-                              key={idx}
+                              key={`inner-${idx}`}
                               cx="100"
                               cy="100"
-                              r={r}
+                              r={rInner}
                               fill="transparent"
                               stroke={slice.color}
-                              strokeWidth="24"
-                              strokeDasharray={circ}
-                              strokeDashoffset={offset}
-                              transform={`rotate(${rotation} 100 100)`}
-                              style={{ transition: 'stroke-dashoffset 0.3s ease' }}
-                            >
-                              <title>{`${slice.label}: ${slice.count} orang (${Math.round(pct)}%)`}</title>
-                            </circle>
+                              strokeWidth={strokeWidth}
+                              strokeDasharray={`${dashLength} ${circInner}`}
+                              transform={`rotate(${slice.rotation} 100 100)`}
+                              onMouseMove={(e) => handleMouseMove(e, slice.label, slice.count, slice.pct, slice.color)}
+                              onMouseLeave={handleMouseLeave}
+                              style={{
+                                transition: 'all 0.2s ease',
+                                cursor: 'pointer',
+                                opacity
+                              }}
+                            />
+                          );
+                        })}
+
+                        {/* Outer Ring */}
+                        {outerSegments.map((slice, idx) => {
+                          const isHovered = hoveredLabel === slice.label;
+                          const opacity = hoveredLabel === null ? 1 : (isHovered ? 1 : 0.55);
+                          const strokeWidth = isHovered ? 20 : 15;
+                          const gap = slice.pct === 100 ? 0 : 3.5;
+                          const dashLength = Math.max(0, (slice.pct / 100) * circOuter - gap);
+
+                          return (
+                            <circle
+                              key={`outer-${idx}`}
+                              cx="100"
+                              cy="100"
+                              r={rOuter}
+                              fill="transparent"
+                              stroke={slice.color}
+                              strokeWidth={strokeWidth}
+                              strokeDasharray={`${dashLength} ${circOuter}`}
+                              transform={`rotate(${slice.rotation} 100 100)`}
+                              onMouseMove={(e) => handleMouseMove(e, slice.label, slice.count, slice.pct, slice.color)}
+                              onMouseLeave={handleMouseLeave}
+                              style={{
+                                transition: 'all 0.2s ease',
+                                cursor: 'pointer',
+                                opacity
+                              }}
+                            />
                           );
                         })}
                       </svg>
+
                       {/* Text in the middle of donut */}
-                      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>{total}</span>
-                        <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Warga</span>
+                      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                        <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{total}</span>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Warga</span>
                       </div>
                     </div>
 
+                    {/* Sleek Tooltip */}
+                    {hoveredSlice && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: hoveredSlice.y,
+                          left: hoveredSlice.x,
+                          background: 'rgba(15, 23, 42, 0.95)',
+                          color: '#ffffff',
+                          padding: '8px 12px',
+                          borderRadius: '6px',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold',
+                          pointerEvents: 'none',
+                          zIndex: 1000,
+                          boxShadow: '0 4px 16px rgba(15, 23, 42, 0.15)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          whiteSpace: 'nowrap',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          transition: 'top 0.1s ease, left 0.1s ease'
+                        }}
+                      >
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: hoveredSlice.color, display: 'inline-block' }} />
+                        <span>{hoveredSlice.label}: <span style={{ color: '#38bdf8' }}>{hoveredSlice.count} orang ({Math.round(hoveredSlice.pct)}%)</span></span>
+                      </div>
+                    )}
+
                     {/* Legend */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                      {activeSlices.map((slice, idx) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', fontWeight: 600 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ display: 'inline-block', width: '12px', height: '12px', background: slice.color, borderRadius: '3px' }} />
-                            <span style={{ color: 'var(--text-secondary)' }}>{slice.label}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+                      {/* Inner Ring Legends */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', justifyContent: 'center', marginBottom: '8px' }}>
+                        {innerGroups.map((g, idx) => (
+                          <div
+                            key={`legend-in-${idx}`}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              color: 'var(--text-primary)',
+                              cursor: 'pointer',
+                              opacity: hoveredLabel === null ? 1 : (hoveredLabel === g.label ? 1 : 0.45)
+                            }}
+                            onMouseEnter={() => setHoveredLabel(g.label)}
+                            onMouseLeave={() => setHoveredLabel(null)}
+                          >
+                            <span style={{ display: 'inline-block', width: '10px', height: '10px', background: g.color, borderRadius: '50%' }} />
+                            <span>{g.label} ({g.count})</span>
                           </div>
-                          <span style={{ color: '#0f172a', fontWeight: 'bold' }}>{slice.count} org ({Math.round((slice.count / total) * 100)}%)</span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+
+                      {/* Outer Ring Legends */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px', fontSize: '0.75rem' }}>
+                        {outerGroups.map((g, idx) => (
+                          <div
+                            key={`legend-out-${idx}`}
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              padding: '4px 6px',
+                              borderRadius: '4px',
+                              background: hoveredLabel === g.label ? '#f1f5f9' : 'transparent',
+                              opacity: hoveredLabel === null ? 1 : (hoveredLabel === g.label ? 1 : 0.45),
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={() => setHoveredLabel(g.label)}
+                            onMouseLeave={() => setHoveredLabel(null)}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ display: 'inline-block', width: '8px', height: '8px', background: g.color, borderRadius: '3px' }} />
+                              <span style={{ color: 'var(--text-secondary)' }}>{g.label}</span>
+                            </div>
+                            <span style={{ color: '#0f172a', fontWeight: 'bold' }}>{g.count} org</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );
