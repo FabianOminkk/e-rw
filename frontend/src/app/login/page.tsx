@@ -118,7 +118,7 @@ export default function LoginPage() {
               onClick={() => handleQuickLogin('admin@erw.com')}
               disabled={isSubmitting}
             >
-              Ketua RT
+              Ketua RW
             </button>
             <button
               className="quick-login-btn bendahara"

@@ -269,7 +269,7 @@ export default function LettersPage() {
                 <textarea
                   className="input-field"
                   rows={3}
-                  placeholder={actionStatus === 'approved' ? 'Contoh: Nomor surat 12/RT03/VI/2026. Dapat diambil di pos.' : 'Contoh: Berkas persyaratan kurang lengkap. Mohon hubungi ketua RT.'}
+                  placeholder={actionStatus === 'approved' ? 'Contoh: Nomor surat 12/RT03/VI/2026. Dapat diambil di pos.' : 'Contoh: Berkas persyaratan kurang lengkap. Mohon hubungi ketua RW.'}
                   value={actionNotes}
                   onChange={(e) => setActionNotes(e.target.value)}
                   required={actionStatus === 'rejected'} // required on rejection

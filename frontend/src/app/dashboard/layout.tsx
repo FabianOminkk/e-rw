@@ -120,7 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="user-info" style={{ flexGrow: 1, minWidth: 0 }}>
             <span className="user-name" title={user.name}>{user.name}</span>
             <span className={`user-role-badge ${user.role}`}>
-              {user.role === 'admin' ? 'Ketua RT' : user.role.replace('_', ' ')}
+              {user.role === 'admin' ? 'Ketua RW' : user.role.replace('_', ' ')}
             </span>
           </div>
         </div>
