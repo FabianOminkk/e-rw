@@ -66,6 +66,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:bendahara')->group(function () {
         Route::post('/finances', [FinanceController::class, 'storeTransaction']); // Create income/expense transaction
         Route::post('/bills', [FinanceController::class, 'storeBill']); // Create monthly iuran bills
+    });
+
+    // Pay monthly bills (Accessible by Bendahara, Warga, and Super Admin)
+    Route::middleware('role:bendahara,warga,super_admin')->group(function () {
         Route::put('/bills/{bill}/pay', [FinanceController::class, 'payBill']); // Pay a monthly bill
     });
 

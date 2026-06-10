@@ -76,6 +76,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Warga Menus */}
           {user.role === 'warga' && (
             <>
+              <Link href="/dashboard/wallet" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/wallet') ? 'active' : ''}`}>
+                <span>👛</span> Dompet Saya
+              </Link>
               <Link href="/dashboard/bills" className={`menu-item ${getMenuRoleClass()} ${isActive('/dashboard/bills') ? 'active' : ''}`}>
                 <span>💳</span> Status Iuran
               </Link>
