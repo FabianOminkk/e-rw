@@ -310,9 +310,9 @@ export default function WalletPage() {
       {/* Payment Gateway Modal */}
       {isModalOpen && selectedMonth && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '480px', background: '#ffffff', border: '1px solid #cbd5e1', boxShadow: '0 10px 40px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
-            <div className="panel-header" style={{ justifyContent: 'space-between', display: 'flex', alignItems: 'center', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              <span className="panel-title" style={{ color: '#0f172a' }}>Lakukan Pembayaran Iuran</span>
+          <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '480px', maxHeight: '90vh', background: '#ffffff', border: '1px solid #cbd5e1', boxShadow: '0 10px 40px rgba(0,0,0,0.12)', overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: '12px' }}>
+            <div className="panel-header" style={{ justifyContent: 'space-between', display: 'flex', alignItems: 'center', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', flexShrink: 0, padding: '16px 24px' }}>
+              <span className="panel-title" style={{ color: '#0f172a', fontWeight: 'bold' }}>Lakukan Pembayaran Iuran</span>
               <button 
                 onClick={() => setIsModalOpen(false)} 
                 style={{ 
@@ -335,7 +335,8 @@ export default function WalletPage() {
               </button>
             </div>
             
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Scrollable body content */}
+            <div style={{ padding: '24px 24px 12px 24px', display: 'flex', flexDirection: 'column', gap: '20px', overflowY: 'auto', flex: 1 }}>
               {/* Selectors for custom input */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>Pilih Periode Iuran</label>
@@ -402,7 +403,7 @@ export default function WalletPage() {
 
               {/* Method Switcher */}
               <div className="input-group">
-                <label className="input-label">Pilih Metode Pembayaran</label>
+                <label className="input-label" style={{ fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Pilih Metode Pembayaran</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '4px' }}>
                   <button
                     onClick={() => setPaymentMethod('qris')}
@@ -457,7 +458,7 @@ export default function WalletPage() {
               {paymentMethod === 'bank' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div className="input-group">
-                    <label className="input-label">Pilih Bank</label>
+                    <label className="input-label" style={{ fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Pilih Bank</label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginTop: '4px' }}>
                       {(['bca', 'mandiri', 'bni'] as const).map((bank) => (
                         <button
@@ -505,24 +506,24 @@ export default function WalletPage() {
                   </span>
                 </div>
               )}
+            </div>
 
-              {/* Actions */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  style={{ padding: '10px 20px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', color: '#334155', fontWeight: 600 }}
-                >
-                  Batal
-                </button>
-                <button
-                  onClick={handleConfirmPayment}
-                  className="btn-primary"
-                  disabled={submitting}
-                  style={{ background: '#10b981' }}
-                >
-                  {submitting ? 'Memproses...' : 'Konfirmasi Sudah Bayar'}
-                </button>
-              </div>
+            {/* Fixed Footer Actions */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', flexShrink: 0 }}>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                style={{ padding: '10px 20px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', color: '#334155', fontWeight: 600 }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmPayment}
+                className="btn-primary"
+                disabled={submitting}
+                style={{ background: '#10b981' }}
+              >
+                {submitting ? 'Memproses...' : 'Konfirmasi Sudah Bayar'}
+              </button>
             </div>
           </div>
         </div>
