@@ -12,6 +12,8 @@ export default function BillsPage() {
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     user_id: '', // empty means all citizens
     month: new Date().toISOString().slice(0, 7), // format: YYYY-MM
@@ -105,6 +107,17 @@ export default function BillsPage() {
     }).format(val);
   };
 
+  const formatMonthName = (monthStr: string) => {
+    if (!monthStr) return '';
+    const [year, month] = monthStr.split('-');
+    const months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const monthIdx = parseInt(month, 10) - 1;
+    return `${months[monthIdx]} ${year}`;
+  };
+
   const filteredBills = bills.filter((b) => {
     if (statusFilter === 'all') return true;
     return b.status === statusFilter;
@@ -180,9 +193,9 @@ export default function BillsPage() {
                      <th>Bulan / Periode</th>
                     <th>Jumlah Tagihan</th>
                     <th>Status</th>
-                    <th>Tanggal Bayar</th>
-                    {isBendahara && <th style={{ textAlign: 'center' }}>Aksi</th>}
-                  </tr>
+                     <th>Tanggal Bayar</th>
+                     {(isBendahara || user?.role === 'super_admin' || user?.role === 'admin') && <th style={{ textAlign: 'center' }}>Aksi</th>}
+                   </tr>
                 </thead>
                 <tbody>
                   {filteredBills.map((bill) => (
@@ -204,17 +217,29 @@ export default function BillsPage() {
                           : '-'
                         }
                       </td>
-                      {isBendahara && (
+                      {(isBendahara || user?.role === 'super_admin' || user?.role === 'admin') && (
                         <td style={{ textAlign: 'center' }}>
                           {bill.status === 'unpaid' ? (
-                            <button
-                              onClick={() => handlePayBill(bill.id)}
-                              style={{ padding: '6px 12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.25)', color: 'var(--accent-emerald)', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
-                            >
-                              Konfirmasi Bayar
-                            </button>
+                            isBendahara ? (
+                              <button
+                                onClick={() => handlePayBill(bill.id)}
+                                style={{ padding: '6px 12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.25)', color: 'var(--accent-emerald)', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
+                              >
+                                Konfirmasi Bayar
+                              </button>
+                            ) : (
+                              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Belum Lunas</span>
+                            )
                           ) : (
-                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Selesai</span>
+                            <button
+                              onClick={() => {
+                                setSelectedInvoice(bill);
+                                setIsInvoiceOpen(true);
+                              }}
+                              style={{ padding: '6px 12px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', color: '#3b82f6', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
+                            >
+                              Lihat Invoice 📄
+                            </button>
                           )}
                         </td>
                       )}
@@ -295,6 +320,110 @@ export default function BillsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Invoice Modal */}
+      {isInvoiceOpen && selectedInvoice && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.55)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '500px', background: '#ffffff', border: '1px solid #cbd5e1', boxShadow: '0 10px 40px rgba(0,0,0,0.12)', borderRadius: '12px', overflow: 'hidden' }}>
+            {/* Header */}
+            <div className="panel-header" style={{ justifyContent: 'space-between', display: 'flex', alignItems: 'center', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', padding: '16px 24px' }}>
+              <span className="panel-title" style={{ color: '#0f172a', fontWeight: 'bold' }}>Bukti Pembayaran Iuran</span>
+              <button 
+                onClick={() => {
+                  setIsInvoiceOpen(false);
+                  setSelectedInvoice(null);
+                }} 
+                style={{ background: 'none', border: 'none', fontSize: '1.8rem', cursor: 'pointer', opacity: 0.7, color: '#475569', outline: 'none', padding: 0 }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Invoice Printable Content */}
+            <div id="invoice-print-area" style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {/* Header Invoice: Logo & Title */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px dashed #e2e8f0', paddingBottom: '16px' }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.5rem', color: '#0f172a', fontWeight: 800 }}>e-RW</h2>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Sistem Pengelolaan Administrasi RW</span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-emerald)', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 8px', borderRadius: '4px' }}>LUNAS</span>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>INV/RW/{selectedInvoice.month.replace('-', '')}/{selectedInvoice.id.toString().padStart(4, '0')}</div>
+                </div>
+              </div>
+
+              {/* Details grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.85rem' }}>
+                <div>
+                  <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>DIBAYAR OLEH</span>
+                  <strong style={{ color: '#0f172a', fontSize: '0.95rem', display: 'block', marginTop: '2px' }}>{selectedInvoice.user?.name}</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>RT {selectedInvoice.user?.no_rt} / RW {selectedInvoice.user?.no_rw}</span>
+                </div>
+                <div>
+                  <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>TANGGAL BAYAR</span>
+                  <span style={{ color: '#0f172a', fontWeight: 600, display: 'block', marginTop: '2px' }}>
+                    {selectedInvoice.payment_date 
+                      ? new Date(selectedInvoice.payment_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
+                      : '-'
+                    }
+                  </span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Metode: Digital Wallet/Cash</span>
+                </div>
+              </div>
+
+              {/* Table brief */}
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', background: '#f8fafc', padding: '10px 16px', borderBottom: '1px solid #e2e8f0', fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>
+                  <span>DESKRIPSI</span>
+                  <span style={{ textAlign: 'right' }}>JUMLAH</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', padding: '14px 16px', fontSize: '0.85rem', color: '#0f172a' }}>
+                  <span>Iuran Kebersihan & Keamanan Bulanan - Periode {formatMonthName(selectedInvoice.month)}</span>
+                  <strong style={{ textAlign: 'right' }}>{formatRupiah(parseFloat(selectedInvoice.amount))}</strong>
+                </div>
+              </div>
+
+              {/* Total */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '2px solid #e2e8f0', paddingTop: '16px' }}>
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>Total Pembayaran</span>
+                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>{formatRupiah(parseFloat(selectedInvoice.amount))}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer buttons */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc' }}>
+              <button
+                onClick={() => {
+                  setIsInvoiceOpen(false);
+                  setSelectedInvoice(null);
+                }}
+                style={{ padding: '10px 20px', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer', color: '#334155', fontWeight: 600 }}
+              >
+                Tutup
+              </button>
+              <button
+                onClick={() => {
+                  const printContent = document.getElementById('invoice-print-area')?.innerHTML;
+                  const originalContent = document.body.innerHTML;
+                  if (printContent) {
+                    document.body.innerHTML = printContent;
+                    window.print();
+                    document.body.innerHTML = originalContent;
+                    window.location.reload(); // reload to restore React state bindings
+                  }
+                }}
+                className="btn-primary"
+                style={{ background: '#3b82f6', border: '1px solid #3b82f6' }}
+              >
+                🖨 Cetak Bukti
+              </button>
+            </div>
           </div>
         </div>
       )}
